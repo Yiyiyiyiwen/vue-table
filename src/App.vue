@@ -72,8 +72,7 @@ export default {
 </script>
 
 <style>
-#app {
-  width: 1000px;
-  margin: 0 auto;
+body{
+  padding: 50px 5px;
 }
 </style>

@@ -1,39 +1,58 @@
 <template>
-  <div>
-    <ul class="tip">
-      <div class="ltip">
-        显示第 {{(currentPage-1)*pageSize+1}} 到第 {{pageSize*currentPage}} 条记录，总共 {{total}} 条记录
-        <span class="form-inline">
-          每页显示 
-          <select class="form-control" v-model="pageSize" v-on:change="showPage(pageSize)" number>
-            <option value="10">10</option>
-            <option value="50">50</option>
-          </select>
-           条数据
-        </span>
-      </div>
-      <div>
-        <li @click="handlefirst">&laquo;</li>
-        <li v-if="currentPage!==1" @click="handlePrev"><</li>
-        <li :class="{'btnOn': currentPage == 1}" @click="handleClick">1</li>
-        <li v-if="showPrevMore" @click="handleMore(1)">...</li>
-        <li
-          :class="{'btnOn': page == currentPage}"
-          v-for="page in pages"
-          @click="handleClick"
-          :key="page"
-        >{{ page }}</li>
-        <li v-if="showNextMore" @click="handleMore(-1)">...</li>
-        <li
-          :class="{'btnOn': currentPage == pageNum}"
-          v-if="pageNum!==1"
-          @click="handleClick"
-        >{{pageNum}}</li>
-        <li v-if="currentPage!==pageNum" @click="handleNext">></li>
-        <li @click="handlelast">&raquo;</li>
-      </div>
-    </ul>
+  <div class="fixed-table-pagination" style="display: block;">
+    <div class="pull-left pagination-detail">
+      <span class="pagination-info">
+        显示第 {{(currentPage-1)*pageSize+1}} 到第 {{pageSize*currentPage}} 条记录，总共 {{total}}
+        条记录
+      </span>
+      <span class="page-list">
+        每页显示
+        <span class="btn-group dropup">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="page-size">{{n}}</span>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <template v-for="(item,index) in numbers">
+              <li
+                class="item"
+                :key="index"
+                :class="{'checked' : index == n }"
+                @click="choose(item.name)"
+              >
+              <a href="javascript:void(0)">{{ item.name }}</a></li>
+            </template>
+          </ul>
+        </span> 条记录
+      </span>
+    </div>
+    <div class="pull-right pagination">
+      <ul class="pagination">
+        <li class="page-first" @click="handlefirst">
+          <a href="javascript:void(0)">«</a>
+        </li>
+        <li class="page-pre" @click="handlePrev">
+          <a href="javascript:void(0)">‹</a>
+        </li>
+        <template v-for="page in pages" @click="handleClick">
+          <li v-if="page === currentPage" class="page-number active" :key="page">
+            <a href="javascript:void(0)">{{page}}</a>
+          </li>
+          <li v-else :key="page" @click="handleClick" class="page-number">
+            <a href="javascript:void(0)">{{page}}</a>
+          </li>
+        </template>
+
+        <li class="page-next" @click="handleNext">
+          <a href="javascript:void(0)">›</a>
+        </li>
+        <li class="page-last" @click="handlelast">
+          <a href="javascript:void(0)">»</a>
+        </li>
+      </ul>
+    </div>
   </div>
+  
 </template>
 
 <script type="es6">
@@ -60,14 +79,27 @@ export default {
       type: Function
     },
     //每页数量改变回调函数
-    handlepagesize:{
-        type:Function
+    handlepagesize: {
+      type: Function
     }
   },
   data() {
     return {
-      showPrevMore: false,
-      showNextMore: false
+      numbers: [
+        {
+          name: 10,
+          checked: true
+        },
+        {
+          name: 20,
+          checked: false
+        },
+        {
+          name: 50,
+          checked: false
+        }
+      ],
+      n: 10
     };
   },
   computed: {
@@ -77,45 +109,72 @@ export default {
     },
     // 计算页码
     pages() {
-      const pagerCount = 6;
-      const currentPage = Number(this.currentPage);
-      const pageCount = this.pageNum;
-      let showPrevMore = false;
-      let showNextMore = false;
-      if (pageCount > pagerCount) {
-        if (currentPage > pagerCount - 3) {
-          showPrevMore = true;
-        }
-        if (currentPage < pageCount - 3) {
-          showNextMore = true;
+      var array = [];
+      var currentPage = this.currentPage;
+      var total = this.pageNum;
+      if (currentPage >= 1 && currentPage <= total) {
+        if (total < 5) {
+          //5页以内
+          for (var $i = 1; $i <= total; $i++) {
+            array.push($i);
+          }
+        } else {
+          //大于5页
+          if (currentPage == 1) {
+            array = [
+              currentPage,
+              currentPage + 1,
+              currentPage + 2,
+              currentPage + 3,
+              currentPage + 4
+            ];
+          } else if (currentPage == 2) {
+            array = [
+              currentPage - 1,
+              currentPage,
+              currentPage + 1,
+              currentPage + 2,
+              currentPage + 3
+            ];
+          } else if (currentPage == total - 1) {
+            array = [
+              currentPage - 3,
+              currentPage - 2,
+              currentPage - 1,
+              currentPage,
+              total
+            ];
+          } else if (currentPage == total) {
+            array = [
+              currentPage - 4,
+              currentPage - 3,
+              currentPage - 2,
+              currentPage - 1,
+              currentPage
+            ];
+          } else {
+            array = [
+              currentPage - 2,
+              currentPage - 1,
+              currentPage,
+              currentPage + 1,
+              currentPage + 2
+            ];
+          }
         }
       }
-      const array = [];
-      if (showPrevMore && !showNextMore) {
-        const startPage = pageCount - (pagerCount - 2);
-        for (let i = startPage; i < pageCount; i++) {
-          array.push(i);
-        }
-      } else if (!showPrevMore && showNextMore) {
-        for (let i = 2; i < pagerCount; i++) {
-          array.push(i);
-        }
-      } else if (showPrevMore && showNextMore) {
-        const offset = 1;
-        for (let i = currentPage - offset; i <= currentPage + offset; i++) {
-          array.push(i);
-        }
-      } else {
-        for (let i = 2; i < pageCount; i++) {
-          array.push(i);
-        }
-      }
-      this.showPrevMore = showPrevMore;
-      this.showNextMore = showNextMore;
+
+      console.log(array);
       return array;
     }
   },
   methods: {
+    choose(index) {
+      //控制n的值，变为用户的选中
+      this.n = index;
+      console.log(this.n)
+      this.showPage(index)
+    },
     // 点击页码跳转
     handleClick(e) {
       let index = parseInt(e.target.innerHTML);
@@ -126,15 +185,19 @@ export default {
     // 点击下一页
     handleNext() {
       let index = this.currentPage + 1;
-      if (!Number.isNaN(index)) {
-        this.handlePageChange(index);
+      if (index <= this.pageNum) {
+        if (!Number.isNaN(index)) {
+          this.handlePageChange(index);
+        }
       }
     },
     // 点击上一页
     handlePrev() {
       let index = this.currentPage - 1;
-      if (!Number.isNaN(index)) {
-        this.handlePageChange(index);
+      if (index != 0) {
+        if (!Number.isNaN(index)) {
+          this.handlePageChange(index);
+        }
       }
     },
     // 前往目标页
@@ -152,75 +215,30 @@ export default {
       }
       this.handlePageChange(index);
     },
-    showPage(pageSize){
-        console.log(pageSize)
-        this.handlepagesize(pageSize)
+    showPage(pageSize) {
+      console.log(pageSize);
+      this.handlepagesize(pageSize);
     },
-    handlefirst(){
-        this.handlePageChange(1)
+    handlefirst() {
+      this.handlePageChange(1);
     },
-    handlelast(){
-        this.handlePageChange(this.total/this.pageSize)
+    handlelast() {
+      this.handlePageChange(this.total / this.pageSize);
     }
   }
 };
 </script>
 
 <style scoped>
-div {
-  overflow: hidden;
+.pagination{
+  margin: 0;
 }
-ul {
-  overflow: hidden;
-  float: left;
+.fixed-table-pagination .pagination-detail {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
-li {
-  font-size: 14px;
-  float: left;
-  list-style-type: none;
-  width: 35px;
-  height: 35px;
-  text-align: center;
-  line-height: 35px;
-  border: 0.3px solid rgb(214, 213, 213);
-  border-left: 0;
-  background: white;
-  color: #457ab2;
-  cursor: pointer;
-}
-li:hover,
-li.btnOn {
-  background: #457ab2;
-  color: white;
-}
-span {
-  float: left;
-  margin-top: 15px;
-  margin-left: 10px;
-}
-input {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #b5b5b5;
-  border-radius: 5px;
-  background: #e4e4e4;
-  margin: 0 2px;
-  text-align: center;
-  font-size: 16px;
-  outline: none;
-}
-.tip{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-}
-.ltip,.form-inline{
-    display: flex;
-    align-items: center;
-}
-.form-inline{
-    margin: 0;
-    margin-left: 20px;
+.fixed-table-pagination div.pagination, .fixed-table-pagination .pagination-detail {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 </style>
