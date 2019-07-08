@@ -36,7 +36,6 @@ export default {
       console.log(index);
       var start = (index - 1) * this.pageSize;
       var end = start + this.pageSize;
-      this.tableData = this.totaldata.slice(start, end);
       console.log(this.tableData);
     },
     handlepagesize(pageSize) {

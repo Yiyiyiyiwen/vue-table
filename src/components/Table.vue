@@ -6,6 +6,9 @@
         <div class="fixed-table-header" style="display: none;">
           <table></table>
         </div>
+        <button type="button" class="btn btn-primary" @click="addlayer">新增</button>
+        <button type="button" class="btn btn-success">修改</button>
+        <button type="button" class="btn btn-danger">删除</button>
         <div class="fixed-table-body">
           <div class="fixed-table-loading" style="top: 41px; display: none;">正在努力地加载数据中，请稍候……</div>
           <table
@@ -59,17 +62,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-index="index"  v-for="(user,index) in tableData" :key="index">
+              <tr data-index="index" v-for="(user,index) in tableData" :key="index">
                 <td class="bs-checkbox">
                   <input data-index="0" name="btSelectItem" type="checkbox" />
                 </td>
-                <td style="">{{user.username}}</td>
-                <td style="">{{user.account}}</td>
-                <td style="">{{user.days}}</td>
-                <td style="">{{user.isavailable}}</td>
-                <td style="">{{user.perform}}</td>
-                <td style="">{{user.createtime}}</td>
-                <td style="">{{user.state}}</td>
+                <td style>{{user.username}}</td>
+                <td style>{{user.account}}</td>
+                <td style>{{user.days}}</td>
+                <td style>{{user.isavailable}}</td>
+                <td style>{{user.perform}}</td>
+                <td style>{{user.createtime}}</td>
+                <td style>{{user.state}}</td>
               </tr>
             </tbody>
           </table>
@@ -83,7 +86,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- <div class="mytable row">
       <table class="table table-striped table-hover">
@@ -116,7 +118,10 @@
           </tr>
         </tbody>
       </table>
-    </div> -->
+    </div>-->
+    <div id="addlayer" style="display:none">
+      <div>123</div>
+    </div>
   </div>
 </template>
 
@@ -130,8 +135,44 @@ export default {
     }
   },
   methods: {
-    addmessage() {
-      console.log("111");
+    addlayer() {//墨绿深蓝风
+
+
+      layer.open(
+        {
+          type: 1,
+          title: "title",
+          area: ["420px", "240px"], //宽高
+          content: $("#addlayer"),
+          shadeClose: true,
+          closeBtn: 1,
+
+        },
+        function() {
+          console.log("22");
+        },
+        function() {
+          layer.msg("取消");
+        }
+      );
+      // layer.confirm(
+      //   "",
+      //   {
+      //     title: "title",
+      //     anim: 2,
+      //     closeBtn: 1,
+      //     skin: "layui-layer-demo", //样式类名
+      //     content: $("#addlayer"),
+      //     btn: ["确定", "取消"],
+      //     area: ["600px"]
+      //   },
+      //   function() {
+      //     layer.msg("确定");
+      //   },
+      //   function() {
+      //     layer.msg("取消")
+      //   }
+      // );
     }
   }
 };
@@ -139,23 +180,33 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.bootstrap-table .table, .bootstrap-table .table > tbody > tr > th, .bootstrap-table .table > tfoot > tr > th, .bootstrap-table .table > thead > tr > td, .bootstrap-table .table > tbody > tr > td, .bootstrap-table .table > tfoot > tr > td {
-    padding: 8px !important;
+.bootstrap-table .table,
+.bootstrap-table .table > tbody > tr > th,
+.bootstrap-table .table > tfoot > tr > th,
+.bootstrap-table .table > thead > tr > td,
+.bootstrap-table .table > tbody > tr > td,
+.bootstrap-table .table > tfoot > tr > td {
+  padding: 8px !important;
 }
 .bootstrap-table .table {
-    margin-bottom: 0 !important;
-    border: 1px solid #dddddd;
-    border-collapse: collapse !important;
-    border-radius: 1px;
+  margin-bottom: 0 !important;
+  border: 1px solid #dddddd;
+  border-collapse: collapse !important;
+  border-radius: 1px;
 }
-.bootstrap-table .table > thead > tr > th{
-    vertical-align: bottom;
-    border: 1px solid #ddd;
+.bootstrap-table .table > thead > tr > th {
+  vertical-align: bottom;
+  border: 1px solid #ddd;
 }
-.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-    padding: 8px;
-    line-height: 1.42857143;
-    vertical-align: top;
-    border: 1px solid #ddd;
+.table > thead > tr > th,
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > td,
+.table > tfoot > tr > td {
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: top;
+  border: 1px solid #ddd;
 }
 </style>
