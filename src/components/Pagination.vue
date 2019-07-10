@@ -86,6 +86,7 @@ export default {
   data() {
     return {
       numbers: [
+       
         {
           name: 10,
           checked: true
@@ -97,6 +98,10 @@ export default {
         {
           name: 50,
           checked: false
+        },
+         {
+          name:2,
+          checked:false
         }
       ],
       n: 10

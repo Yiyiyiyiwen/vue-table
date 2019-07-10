@@ -3,31 +3,17 @@
     <div class="bootstrap-table">
       <div class="fixed-table-toolbar"></div>
       <div class="fixed-table-container" style="padding-bottom: 0px;">
-        <div class="fixed-table-header" style="display: none;">
-          <table></table>
-        </div>
         <button type="button" class="btn btn-primary" @click="addlayer">新增</button>
         <button type="button" class="btn btn-success">修改</button>
         <button type="button" class="btn btn-danger">删除</button>
         <div class="fixed-table-body">
           <div class="fixed-table-loading" style="top: 41px; display: none;">正在努力地加载数据中，请稍候……</div>
-          <table
-            id="table"
-            data-url="/university/manage/baseinfo/bjxx/findByPage.shtml"
-            data-side-pagination="server"
-            data-pagination="true"
-            data-search="false"
-            data-classes="table table-hover table-condensed"
-            data-striped="true"
-            data-click-to-select="true"
-            data-detail-view="false"
-            class="table table-hover table-condensed table-striped"
-          >
+          <table id="table" class="table table-hover table-condensed table-striped">
             <thead>
               <tr>
                 <th class="bs-checkbox" style="width: 36px; " data-field="status" tabindex="0">
                   <div class="th-inner">
-                    <input name="btSelectAll" type="checkbox" />
+                    <input name="btSelectAll" type="checkbox" @click="checkall" v-model="mychecked" />
                   </div>
                   <div class="fht-cell"></div>
                 </th>
@@ -64,7 +50,14 @@
             <tbody>
               <tr data-index="index" v-for="(user,index) in tableData" :key="index">
                 <td class="bs-checkbox">
-                  <input data-index="0" name="btSelectItem" type="checkbox" />
+                  <input
+                    data-index="0"
+                    name="btSelectItem"
+                    type="checkbox"
+                    :value="user.id"
+                    v-model="mycheckedNames"
+                    @click="checkchoose(user)"
+                  />
                 </td>
                 <td style>{{user.username}}</td>
                 <td style>{{user.account}}</td>
@@ -72,53 +65,14 @@
                 <td style>{{user.isavailable}}</td>
                 <td style>{{user.perform}}</td>
                 <td style>{{user.createtime}}</td>
-                <td style>{{user.state}}</td>
+                <td style>{{user.mystate}}</td>
               </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="fixed-table-footer" style="display: none;">
-          <table>
-            <tbody>
-              <tr></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- <div class="mytable row">
-      <table class="table table-striped table-hover">
-        <thead class>
-          <tr>
-            <th>
-              <input type="checkbox" />
-            </th>
-            <th>用户名</th>
-            <th>账号</th>
-            <th>有效天数</th>
-            <th>是否有效</th>
-            <th>角色</th>
-            <th>创建时间</th>
-            <th>状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user,index) in tableData" :key="index">
-            <th>
-              <input type="checkbox" />
-            </th>
-            <td>{{user.username}}</td>
-            <td>{{user.account}}</td>
-            <td>{{user.days}}</td>
-            <td>{{user.isavailable}}</td>
-            <td>{{user.perform}}</td>
-            <td>{{user.createtime}}</td>
-            <td>{{user.state}}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>-->
     <div id="addlayer" style="display:none">
       <div>123</div>
     </div>
@@ -132,11 +86,71 @@ export default {
   props: {
     tableData: {
       type: Array
+    },
+    checkednames: {
+      type: Array,
+      default: []
+    },
+    checked: {
+      default: false,
+      required:true
+    },
+    currentPage: {},
+    pageSize: {}
+  },
+  data() {
+    return {
+      mycheckedNames: this.checkednames,
+      mychecked: this.checked
+    };
+  },
+  watch:{
+    checkednames(val){
+      this.mycheckedNames = val
+    },
+    checked(val){
+      this.mychecked = val
     }
   },
   methods: {
-    addlayer() {//墨绿深蓝风
-
+    checkchoose(item) {
+      console.log(item.state);
+      var mycheckedNames = this.mycheckedNames;
+      var length = mycheckedNames.length;
+      if (item.state == false) {
+        length -= 1;
+      } else {
+        length += 1;
+      }
+      console.log(length+" "+this.pageSize)
+      if (length == this.pageSize) {
+        this.mychecked = true;
+      } else {
+        this.mychecked = false;
+      }
+    },
+    checkall() {
+      var newlist = []
+      var mychecked = this.mychecked;
+      if (mychecked) {
+        this.mycheckedNames = [];
+        mychecked = false;
+      } else {
+        this.mycheckedNames = [];
+        var start = (this.currentPage - 1) * this.pageSize;
+        var end = start + this.pageSize;
+        console.log(start+" "+end)
+        for (let i = 0; i < this.pageSize; i++) {
+          console.log(this.tableData[i].id)
+          newlist.push(this.tableData[i].id);
+        }
+        this.mycheckedNames = newlist
+        console.log(this.mycheckedNames)
+        mychecked = true;
+      }
+    },
+    addlayer() {
+      //墨绿深蓝风
 
       layer.open(
         {
@@ -145,8 +159,7 @@ export default {
           area: ["420px", "240px"], //宽高
           content: $("#addlayer"),
           shadeClose: true,
-          closeBtn: 1,
-
+          closeBtn: 1
         },
         function() {
           console.log("22");
